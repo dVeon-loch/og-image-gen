@@ -17,3 +17,5 @@ node_modules
 
 # This is a library crate, ignore lock file
 Cargo.lock
+
+examples/tmp/

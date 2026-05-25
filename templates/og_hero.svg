@@ -30,15 +30,16 @@
   {% endif %}
 
   {% if screenshot_b64 != "" %}
-  <!-- Screenshot panel -->
-  <rect x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}" rx="14" fill="black" opacity="0.12"/>
-  <image href="data:image/png;base64,{{ screenshot_b64 }}"
+  <!-- Frame shadow (fixed position) -->
+  <rect x="668" y="48" width="500" height="542" rx="14" fill="black" opacity="0.18"/>
+  <!-- Frame border -->
+  <rect x="664" y="44" width="500" height="542" rx="14"
+        fill="none" stroke="white" stroke-width="1.5" opacity="0.25"/>
+  <!-- Image on top of everything, floating left past the frame border -->
+  <image href="{{ screenshot_b64 }}"
          x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}"
          clip-path="url(#sc-clip)"
          preserveAspectRatio="xMidYTop slice"/>
-  <!-- Subtle inner shadow on screenshot edges -->
-  <rect x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}" rx="14"
-        fill="none" stroke="white" stroke-width="1" opacity="0.15"/>
   {% endif %}
 
   <!-- Tag line -->

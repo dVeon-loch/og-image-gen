@@ -61,15 +61,27 @@ impl Default for OgHeroParams {
             canvas_w: 1200,
             canvas_h: 630,
             screenshot_b64: None,
-            screenshot_w: 568,
-            screenshot_h: 542,
+            screenshot_w: 580,
+            screenshot_h: 530,
         }
     }
 }
 
-/// Base64-encode raw image bytes for use in [`OgHeroParams::screenshot_b64`].
+fn detect_mime(data: &[u8]) -> &'static str {
+    match data {
+        [0xFF, 0xD8, 0xFF, ..] => "image/jpeg",
+        [0x89, b'P', b'N', b'G', ..] => "image/png",
+        [b'G', b'I', b'F', ..] => "image/gif",
+        _ => "image/png",
+    }
+}
+
+/// Encode raw image bytes as a data URI for use in [`OgHeroParams::screenshot_b64`].
+/// Detects JPEG, PNG, and GIF automatically.
 pub fn encode_image(data: &[u8]) -> String {
-    base64::engine::general_purpose::STANDARD.encode(data)
+    let mime = detect_mime(data);
+    let b64 = base64::engine::general_purpose::STANDARD.encode(data);
+    format!("data:{mime};base64,{b64}")
 }
 
 static INTER_400: &[u8] = include_bytes!("../assets/inter-400.ttf");
@@ -111,12 +123,18 @@ pub fn render_og_hero(params: &OgHeroParams) -> Result<Vec<u8>, OgImageError> {
 
     let screenshot_b64 = params.screenshot_b64.as_deref().unwrap_or("");
 
-    // Right panel spans x 580-1180 (600px wide), full canvas height 630px.
-    // Center the screenshot within that area with a small inset.
-    let sc_w = params.screenshot_w.min(568);
-    let sc_h = params.screenshot_h.min(590);
-    let sc_x = 590u32 + (568u32.saturating_sub(sc_w)) / 2;
-    let sc_y = 20u32 + (590u32.saturating_sub(sc_h)) / 2;
+    // Frame is fixed at x=664, y=44, w=500, h=542.
+    // Image left edge is always 80px left of the frame, creating a left overflow effect.
+    // Image is vertically centered within the frame.
+    const FRAME_X: u32 = 664;
+    const FRAME_Y: u32 = 44;
+    const FRAME_H: u32 = 542;
+    const IMG_LEFT: u32 = FRAME_X - 80;
+
+    let sc_w = params.screenshot_w;
+    let sc_h = params.screenshot_h.min(FRAME_H);
+    let sc_x = IMG_LEFT;
+    let sc_y = FRAME_Y + (FRAME_H.saturating_sub(sc_h)) / 2;
 
     let tag_text = xml_escape(&params.tag.text);
     let title_line1 = xml_escape(&title_line1);
