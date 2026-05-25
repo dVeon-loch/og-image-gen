@@ -12,7 +12,7 @@
     </filter>
     {% if screenshot_b64 != "" %}
     <clipPath id="sc-clip">
-      <rect x="596" y="44" width="568" height="542" rx="14"/>
+      <rect x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}" rx="14"/>
     </clipPath>
     {% endif %}
   </defs>
@@ -31,13 +31,13 @@
 
   {% if screenshot_b64 != "" %}
   <!-- Screenshot panel -->
-  <rect x="600" y="48" width="568" height="542" rx="14" fill="black" opacity="0.12"/>
+  <rect x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}" rx="14" fill="black" opacity="0.12"/>
   <image href="data:image/png;base64,{{ screenshot_b64 }}"
-         x="596" y="44" width="568" height="542"
+         x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}"
          clip-path="url(#sc-clip)"
          preserveAspectRatio="xMidYTop slice"/>
   <!-- Subtle inner shadow on screenshot edges -->
-  <rect x="596" y="44" width="568" height="542" rx="14"
+  <rect x="{{ sc_x }}" y="{{ sc_y }}" width="{{ sc_w }}" height="{{ sc_h }}" rx="14"
         fill="none" stroke="white" stroke-width="1" opacity="0.15"/>
   {% endif %}
 

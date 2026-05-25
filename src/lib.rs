@@ -34,6 +34,10 @@ pub struct OgHeroParams {
     /// Base64-encoded PNG/JPEG to show as a right-panel screenshot preview.
     /// Use [`encode_image`] to produce this from raw bytes.
     pub screenshot_b64: Option<String>,
+    /// Display width of the screenshot in the right panel. Defaults to 568 (full panel width).
+    pub screenshot_w: u32,
+    /// Display height of the screenshot in the right panel. Defaults to 542 (full panel height).
+    pub screenshot_h: u32,
 }
 
 impl Default for OgHeroParams {
@@ -57,6 +61,8 @@ impl Default for OgHeroParams {
             canvas_w: 1200,
             canvas_h: 630,
             screenshot_b64: None,
+            screenshot_w: 568,
+            screenshot_h: 542,
         }
     }
 }
@@ -105,6 +111,13 @@ pub fn render_og_hero(params: &OgHeroParams) -> Result<Vec<u8>, OgImageError> {
 
     let screenshot_b64 = params.screenshot_b64.as_deref().unwrap_or("");
 
+    // Right panel spans x 580-1180 (600px wide), full canvas height 630px.
+    // Center the screenshot within that area with a small inset.
+    let sc_w = params.screenshot_w.min(568);
+    let sc_h = params.screenshot_h.min(590);
+    let sc_x = 590u32 + (568u32.saturating_sub(sc_w)) / 2;
+    let sc_y = 20u32 + (590u32.saturating_sub(sc_h)) / 2;
+
     let tag_text = xml_escape(&params.tag.text);
     let title_line1 = xml_escape(&title_line1);
     let title_line2 = xml_escape(&title_line2);
@@ -125,6 +138,10 @@ pub fn render_og_hero(params: &OgHeroParams) -> Result<Vec<u8>, OgImageError> {
         "title_y1":       title_y1,
         "title_y2":       title_y2,
         "screenshot_b64": screenshot_b64,
+        "sc_x":           sc_x,
+        "sc_y":           sc_y,
+        "sc_w":           sc_w,
+        "sc_h":           sc_h,
     });
 
     let template = liquid::ParserBuilder::with_stdlib()
