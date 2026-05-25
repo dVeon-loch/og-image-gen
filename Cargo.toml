@@ -1,0 +1,18 @@
+[package]
+name = "og-image-gen"
+version = "0.1.0"
+edition = "2021"
+description = "Server-side OG image generation via SVG templates"
+license = "MIT"
+
+[dependencies]
+resvg     = "0.47"
+usvg      = "0.47"
+tiny-skia = "0.12"
+liquid    = "0.26"
+base64    = "0.22"
+serde     = { version = "1.0", features = ["derive"] }
+thiserror = "2"
+
+[[example]]
+name = "smoke"
